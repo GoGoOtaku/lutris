@@ -47,6 +47,7 @@ class GameDialogCommon(ModelessDialog):
         self.image_buttons = {}
         self.option_page_indices = set()
         self.advanced_switch = None
+        self.action_widgets = []
         self.game_box = None
         self.system_box = None
         self.runner_name = None
@@ -359,7 +360,10 @@ class GameDialogCommon(ModelessDialog):
             header_bar.pack_end(switch_box)
 
             self.advanced_switch = switch_box
-            self.update_advanced_switch_visibilty(self.notebook.get_current_page())
+            self.action_widgets = [ cancel_button, save_button, switch_box ]
+
+            if self.notebook:
+                self.update_advanced_switch_visibilty(self.notebook.get_current_page())
         else:
             checkbox = Gtk.CheckButton(label=_("Show advanced options"))
             checkbox.set_active(settings.read_setting("show_advanced_options") == "True")
@@ -368,6 +372,7 @@ class GameDialogCommon(ModelessDialog):
             checkbox.set_halign(Gtk.Align.START)
             self.action_area.pack_start(checkbox, True, True, 0)
             self.action_area.set_child_secondary(checkbox, True)
+            self.action_widgets = [ self.action_area ]
 
     def on_show_advanced_options_toggled(self, is_active):
         settings.write_setting("show_advanced_options", is_active)
