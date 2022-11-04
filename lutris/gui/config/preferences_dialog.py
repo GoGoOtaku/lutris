@@ -60,11 +60,7 @@ class PreferencesDialog(GameDialogCommon):
 
     def on_sidebar_activated(self, _listbox, row):
         show_actions = row.get_children()[0].stack_id == "system-stack"
-        for w in self.action_widgets:
-            if show_actions:
-                w.show()
-            else:
-                w.hide()
+        self.set_header_bar_controls_visibility(show_actions)
         self.get_header_bar().set_show_close_button(not show_actions)
         self.stack.set_visible_child_name(row.get_children()[0].stack_id)
 

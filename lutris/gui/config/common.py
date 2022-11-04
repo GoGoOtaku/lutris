@@ -46,8 +46,8 @@ class GameDialogCommon(ModelessDialog):
         self.runner_dropdown = None
         self.image_buttons = {}
         self.option_page_indices = set()
-        self.advanced_switch = None
-        self.action_widgets = []
+        self.advanced_switch_widgets = []
+        self.header_bar_widgets = []
         self.game_box = None
         self.system_box = None
         self.runner_name = None
@@ -86,10 +86,15 @@ class GameDialogCommon(ModelessDialog):
         self._build_system_tab(config_level)
         self.update_advanced_switch_visibilty(self.notebook.get_current_page())
 
+    def set_header_bar_controls_visibility(self, value):
+        for w in self.header_bar_widgets:
+            w.set_visible(value)
+
     def update_advanced_switch_visibilty(self, current_page_index):
-        if self.advanced_switch and self.notebook:
+        if self.notebook:
             show_switch = current_page_index in self.option_page_indices
-            self.advanced_switch.set_visible(show_switch)
+            for w in self.advanced_switch_widgets:
+                w.set_visible(show_switch)
 
     def _build_info_tab(self):
         info_box = VBox()
@@ -340,11 +345,12 @@ class GameDialogCommon(ModelessDialog):
         # Advanced settings toggle
         switch_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL,
                              spacing=5,
-                             no_show_all=True)
+                             no_show_all=True,
+                             visible=True)
         switch_box.set_tooltip_text(_("Show advanced options"))
 
-        switch_label = Gtk.Label(_("Advanced"), visible=True)
-        switch = Gtk.Switch(visible=True)
+        switch_label = Gtk.Label(_("Advanced"), no_show_all=True, visible=True)
+        switch = Gtk.Switch(no_show_all=True, visible=True)
         switch.set_state(settings.read_setting("show_advanced_options") == "True")
         switch.connect("state_set", lambda _w, s:
                        self.on_show_advanced_options_toggled(bool(s)))
@@ -355,8 +361,10 @@ class GameDialogCommon(ModelessDialog):
         header_bar = self.get_header_bar()
         header_bar.pack_end(switch_box)
 
-        self.advanced_switch = switch_box
-        self.action_widgets = [cancel_button, save_button, switch_box]
+        # These lists need to be distict, so they can be separately
+        # hidden or shown without interfering with each other.
+        self.advanced_switch_widgets = [switch_label, switch]
+        self.header_bar_widgets = [cancel_button, save_button, switch_box]
 
         if self.notebook:
             self.update_advanced_switch_visibilty(self.notebook.get_current_page())
