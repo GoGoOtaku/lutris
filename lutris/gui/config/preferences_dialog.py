@@ -57,7 +57,6 @@ class PreferencesDialog(GameDialogCommon):
             self.build_scrolled_window(self.system_box),
             "system-stack"
         )
-        self.build_action_area(self.on_save)
 
     def on_sidebar_activated(self, _listbox, row):
         show_actions = row.get_children()[0].stack_id == "system-stack"
